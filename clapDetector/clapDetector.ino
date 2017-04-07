@@ -33,23 +33,29 @@ const int servoTopPin = 3;
 const int servoBottomPin = 5;
 const int microphonePin = 0;
 int servoSpeed = 90;
-const int servoHalfMillis = 350;  //Determine experimentally
-const double clapVoltage = 2.4;   //Determine experimentally
+const int servoMillis = 300;  //Determine experimentally
+const double clapVoltage = 1.8;   //Determine experimentally
 double microphoneValue = 0;
 double microphoneVoltage = 0;
+boolean lightOn = false;
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("Initializing...");
   servoTop.attach(servoTopPin);
   servoBottom.attach(servoBottomPin);
   servoTop.write(servoSpeed);
   servoBottom.write(servoSpeed);
+  Serial.println("Initialized.");
 }
 
 void loop() {
   microphoneValue = analogRead(microphonePin);
   microphoneVoltage = microphoneValue * 5.0 / 1023.0;
+  Serial.println(microphoneVoltage);
   
   if(microphoneVoltage > clapVoltage) {
+    Serial.println("Clap Detected");
     if(servoSpeed == 0) {
       servoSpeed = 180;
     }
@@ -59,12 +65,23 @@ void loop() {
     }
     
     servoTop.write(servoSpeed);
-    delay(servoHalfMillis);
+    delay(servoMillis);
+    delay(50);
     servoBottom.write(servoSpeed);
-    delay(servoHalfMillis);
+    delay(servoMillis);
+    delay(50);
     servoTop.write(90);
     servoBottom.write(90);
+    if(!lightOn) {
+      Serial.println("Lights On");
+    }
+    else {
+      Serial.println("Lights Off");
+    }
+
+    lightOn = !lightOn;
     delay(500);
+    
   }
-  delay(5);
+  delay(50);
 }
